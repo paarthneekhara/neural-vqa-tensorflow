@@ -2,9 +2,11 @@ import json
 import argparse
 from os.path import isfile, join
 import re
+import numpy as np
+import pprint
+import pickle
 
-
-def load_questions_answers(split, opts):
+def load_questions_answers(opts):
 	
 	questions = None
 	answers = None
@@ -15,19 +17,19 @@ def load_questions_answers(split, opts):
 	v_q_json_file = join(opts.data_dir, 'Questions_Val_mscoco/MultipleChoice_mscoco_val2014_questions.json')
 	v_a_json_file = join(opts.data_dir, 'mscoco_val2014_annotations.json')
 
-	print "Loading Training qs"
+	print "Loading Training questions"
 	with open(t_q_json_file) as f:
 		t_questions = json.loads(f.read())
 	
-	print "Loading Training ans"
+	print "Loading Training anwers"
 	with open(t_a_json_file) as f:
 		t_answers = json.loads(f.read())
 
-	print "Loading Val qs"
+	print "Loading Val questions"
 	with open(v_q_json_file) as f:
 		v_questions = json.loads(f.read())
 	
-	print "Loading Val ans"
+	print "Loading Val answers"
 	with open(v_a_json_file) as f:
 		v_answers = json.loads(f.read())
 
@@ -40,12 +42,12 @@ def load_questions_answers(split, opts):
 	
 	answer_vocab = make_answer_vocab(answers)
 	question_vocab, max_question_length = make_questions_vocab(questions, answers, answer_vocab)
-	
+	print "Max Question Length", max_question_length
 	word_regex = re.compile(r'\w+')
 	training_data = []
-	for i,question in enumerate( t_questions['questions'] ):
+	for i,question in enumerate( t_questions['questions']):
 		ans = t_answers['annotations'][i]['multiple_choice_answer']
-		if answer_vocab[ ans ]:
+		if ans in answer_vocab:
 			training_data.append({
 				'image_id' : t_answers['annotations'][i]['image_id'],
 				'question' : np.zeros(max_question_length),
@@ -57,11 +59,14 @@ def load_questions_answers(split, opts):
 			for i in range(0, len(question_words)):
 				training_data[-1]['question'][base + i] = question_vocab[ question_words[i] ]
 
+	# pprint.pprint(training_data)
+	print "Training Data", len(training_data)
 
+	
 	val_data = []
-	for i,question in enumerate( v_questions['questions'] ):
+	for i,question in enumerate( v_questions['questions']):
 		ans = v_answers['annotations'][i]['multiple_choice_answer']
-		if answer_vocab[ ans ]:
+		if ans in answer_vocab:
 			val_data.append({
 				'image_id' : v_answers['annotations'][i]['image_id'],
 				'question' : np.zeros(max_question_length),
@@ -72,6 +77,19 @@ def load_questions_answers(split, opts):
 			base = max_question_length - len(question_words)
 			for i in range(0, len(question_words)):
 				val_data[-1]['question'][base + i] = question_vocab[ question_words[i] ]
+
+	print "Validation Data", len(val_data)
+
+	data = {
+		'training' : training_data,
+		'validation' : val_data,
+		'answer_vocab' : answer_vocab,
+		'question_vocab' : question_vocab,
+		'max_question_length' : max_question_length
+	}
+
+	return data
+
 
 
 def make_answer_vocab(answers):
@@ -150,7 +168,7 @@ def main():
                        help='Data directory')
 
 	args = parser.parse_args()
-	load_questions_answers(args.split, args)
+	load_questions_answers(args)
 	
 
 if __name__ == '__main__':

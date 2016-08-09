@@ -2,3 +2,7 @@
 Data/*
 .idea*
 *.pdf
+*.jpg
+*.pyc
+sample.py
+vggtest.py
