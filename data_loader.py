@@ -11,10 +11,10 @@ def load_questions_answers(opts):
 	questions = None
 	answers = None
 	
-	t_q_json_file = join(opts.data_dir, 'Questions_Train_mscoco/MultipleChoice_mscoco_train2014_questions.json')
+	t_q_json_file = join(opts.data_dir, 'MultipleChoice_mscoco_train2014_questions.json')
 	t_a_json_file = join(opts.data_dir, 'mscoco_train2014_annotations.json')
 
-	v_q_json_file = join(opts.data_dir, 'Questions_Val_mscoco/MultipleChoice_mscoco_val2014_questions.json')
+	v_q_json_file = join(opts.data_dir, 'MultipleChoice_mscoco_val2014_questions.json')
 	v_a_json_file = join(opts.data_dir, 'mscoco_val2014_annotations.json')
 	qa_data_file = join(opts.data_dir, 'qa_data_file.pkl')
 	
