@@ -6,3 +6,5 @@ Data/*
 *.pyc
 sample.py
 vggtest.py
+*.pem
+amazon_ssh.txt

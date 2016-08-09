@@ -6,6 +6,9 @@ import data_loader
 import utils
 import argparse
 import numpy as np
+import pickle
+import h5py
+import time
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -17,6 +20,11 @@ def main():
                        help='Data directory')
 	parser.add_argument('--batch_size', type=int, default=10,
                        help='Batch Size')
+	parser.add_argument('--fc7_feature_file', type=str, default="Data/fc7_features.h5",
+                       help='Batch Size')
+	parser.add_argument('--image_id_list', type=str, default="Data/image_id_list.h5",
+                       help='Image IDs')
+
 
 	args = parser.parse_args()
 	
@@ -32,8 +40,8 @@ def main():
 
 	graph = tf.get_default_graph()
 
-	for opn in graph.get_operations():
-		print "Name", opn.name, opn.values()
+	# for opn in graph.get_operations():
+	# 	print "Name", opn.name, opn.values()
 
 	all_data = data_loader.load_questions_answers(args)
 	if args.split == "train":
@@ -52,38 +60,38 @@ def main():
 	sess = tf.Session()
 	fc7 = np.ndarray( (len(image_id_list), 4096 ) )
 	idx = 0
+
 	while idx < len(image_id_list):
+		start = time.clock()
 		image_batch = np.ndarray( (args.batch_size, 224, 224, 3 ) )
 		for i in range(0, args.batch_size):
 			image_file = join(args.data_dir, '%s2014/COCO_%s2014_%.12d.jpg'%(args.split, args.split, image_id_list[idx]) )
 			image_batch[i,:,:,:] = utils.load_image_array(image_file)
 			idx += 1
-
+		
+		
 		feed_dict  = { images : image_batch}
 		fc7_tensor = graph.get_tensor_by_name("import/fc7/Reshape:0")
 		fc7_batch = sess.run(fc7_tensor, feed_dict = feed_dict)
 		fc7[(idx - args.batch_size):idx, :] = fc7_batch
+		end = time.clock()
+		print "Time for batch 10 photos", end - start
+		print "Hours For Whole Dataset" , (len(image_id_list) * 1.0)*(end - start)/60.0/60.0/10.0
+
 		print "Images Processed", idx
-		
+		if idx > 40:
+			break
 
-	# image_files = [join(mypath, f) for f in os.listdir(args.img_dir) if f.contains(".jpg")]
-	
+	print "Saving fc7 features"
+	h5f_fc7 = h5py.File(args.fc7_feature_file, 'w')
+	h5f_fc7.create_dataset('fc7_features', data=fc7)
+	h5f_fc7.close()
 
-
-	# for image_file in image_files[0:5]
-	# 	img = misc.imread(image_file)
-	# 	img_resized = misc.imresize(img, (224, 224))
-	# 	print "cat shape", cat_resized.shape
-	# 	sess = tf.Session()
-	# 	init = tf.initialize_all_variables()
-	# 	sess.run( init )
-
-	# 	x = cat_resized.reshape( (1,224, 224, 3) )
-
-	# 	feed_dict  = { images : x}
-	# 	prob_tensor = graph.get_tensor_by_name("import/fc7/Reshape:0")
-	# 	prob = sess.run( prob_tensor, feed_dict = feed_dict )
-	# 	print prob.shape
+	print "Saving image id list"
+	h5f_image_id_list = h5py.File(args.image_id_list, 'w')
+	h5f_image_id_list.create_dataset('image_id_list', data=image_id_list)
+	h5f_image_id_list.close()
+	print "Done!"
 
 if __name__ == '__main__':
 	main()

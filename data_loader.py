@@ -16,6 +16,13 @@ def load_questions_answers(opts):
 
 	v_q_json_file = join(opts.data_dir, 'Questions_Val_mscoco/MultipleChoice_mscoco_val2014_questions.json')
 	v_a_json_file = join(opts.data_dir, 'mscoco_val2014_annotations.json')
+	qa_data_file = join(opts.data_dir, 'qa_data_file.pkl')
+	
+	if isfile(qa_data_file):
+		with open(qa_data_file) as f:
+			data = pickle.load(f)
+			print "Question Vocab Size", len(data['question_vocab'])
+			return data
 
 	print "Loading Training questions"
 	with open(t_q_json_file) as f:
@@ -88,6 +95,9 @@ def load_questions_answers(opts):
 		'max_question_length' : max_question_length
 	}
 
+	print "Saving qa_data"
+	with open(qa_data_file, 'wb') as f:
+		pickle.dump(data, f)
 	return data
 
 
