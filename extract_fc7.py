@@ -12,7 +12,7 @@ import time
 
 def main():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--split', type=str, default='val',
+	parser.add_argument('--split', type=str, default='train',
                        help='train/val')
 	parser.add_argument('--model_path', type=str, default='Data/vgg16.tfmodel',
                        help='Pretrained VGG16 Model')
@@ -20,10 +20,7 @@ def main():
                        help='Data directory')
 	parser.add_argument('--batch_size', type=int, default=10,
                        help='Batch Size')
-	parser.add_argument('--fc7_feature_file', type=str, default="Data/fc7_features.h5",
-                       help='Batch Size')
-	parser.add_argument('--image_id_list', type=str, default="Data/image_id_list.h5",
-                       help='Image IDs')
+	
 
 
 	args = parser.parse_args()
@@ -79,16 +76,15 @@ def main():
 		print "Hours For Whole Dataset" , (len(image_id_list) * 1.0)*(end - start)/60.0/60.0/10.0
 
 		print "Images Processed", idx
-		if idx > 40:
-			break
+		
 
 	print "Saving fc7 features"
-	h5f_fc7 = h5py.File(args.fc7_feature_file, 'w')
+	h5f_fc7 = h5py.File( join(args.data_dir, args.split + '_fc7.h5'), 'w')
 	h5f_fc7.create_dataset('fc7_features', data=fc7)
 	h5f_fc7.close()
 
 	print "Saving image id list"
-	h5f_image_id_list = h5py.File(args.image_id_list, 'w')
+	h5f_image_id_list = h5py.File( join(args.data_dir, args.split + '_image_id_list.h5'), 'w')
 	h5f_image_id_list.create_dataset('image_id_list', data=image_id_list)
 	h5f_image_id_list.close()
 	print "Done!"
