@@ -1,5 +1,7 @@
 .DS_Store
+!Data/
 Data/*
+!Data/download_data.sh
 .idea*
 *.pdf
 *.jpg
