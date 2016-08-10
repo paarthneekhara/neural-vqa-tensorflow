@@ -58,7 +58,7 @@ class Vis_lstm_model:
 
 	def build_model(self):
 		fc7_features = tf.placeholder('float32',[ None, self.options['fc7_feature_length'] ])
-		sentence = tf.placeholder('int32',[None, self.options['lstm_steps']] )
+		sentence = tf.placeholder('int32',[None, self.options['lstm_steps'] - 1] )
 		answer = tf.placeholder('float32', [None, self.options['ans_vocab_size']])
 
 
@@ -78,11 +78,11 @@ class Vis_lstm_model:
 		lstm_answer = lstm_output[-1]
 		answer_probab = tf.matmul(lstm_answer, self.ans_sm_W) + self.ans_sm_b
 		answer_probab = tf.nn.softmax(answer_probab, 'answer_probab')
-		loss = tf.nn.softmax_cross_entropy_with_logits(answer_probab, answer, name = 'loss')
-
-		return loss, answer_probab
-		# loss = tf.nn.cr
-
-
-
-
+		ce = tf.nn.softmax_cross_entropy_with_logits(answer_probab, answer, name = 'ce')
+		loss = tf.reduce_sum(ce, name = 'loss')
+		input_tensors = {
+			'fc7' : fc7_features,
+			'sentence' : sentence,
+			'answer' : answer
+		}
+		return input_tensors, loss, answer_probab
