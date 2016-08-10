@@ -5,6 +5,7 @@ import re
 import numpy as np
 import pprint
 import pickle
+import h5py
 
 def load_questions_answers(opts):
 	
@@ -21,7 +22,6 @@ def load_questions_answers(opts):
 	if isfile(qa_data_file):
 		with open(qa_data_file) as f:
 			data = pickle.load(f)
-			print "Question Vocab Size", len(data['question_vocab'])
 			return data
 
 	print "Loading Training questions"
@@ -165,6 +165,14 @@ def make_questions_vocab(questions, answers, answer_vocab):
 	return qw_vocab, max_question_length
 
 
+def load_fc7_features(data_dir, split):
+	fc7_features = None
+	image_id_list = None
+	with h5py.File( join( data_dir, (split + '_fc7.h5')),'r') as hf:
+		fc7_features = np.array(hf.get('fc7_features'))
+	with h5py.File( join( data_dir, (split + '_image_id_list.h5')),'r') as hf:
+		image_id_list = np.array(hf.get('image_id_list'))
+	return fc7_features, image_id_list
 
 
 

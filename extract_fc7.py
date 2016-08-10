@@ -61,21 +61,27 @@ def main():
 	while idx < len(image_id_list):
 		start = time.clock()
 		image_batch = np.ndarray( (args.batch_size, 224, 224, 3 ) )
+
+		count = 0
 		for i in range(0, args.batch_size):
+			if idx >= len(image_id_list):
+				break
 			image_file = join(args.data_dir, '%s2014/COCO_%s2014_%.12d.jpg'%(args.split, args.split, image_id_list[idx]) )
 			image_batch[i,:,:,:] = utils.load_image_array(image_file)
 			idx += 1
+			count += 1
 		
 		
-		feed_dict  = { images : image_batch}
+		feed_dict  = { images : image_batch[0:count,:,:,:] }
 		fc7_tensor = graph.get_tensor_by_name("import/fc7/Reshape:0")
 		fc7_batch = sess.run(fc7_tensor, feed_dict = feed_dict)
-		fc7[(idx - args.batch_size):idx, :] = fc7_batch
+		fc7[(idx - count):idx, :] = fc7_batch[0:count,:]
 		end = time.clock()
 		print "Time for batch 10 photos", end - start
 		print "Hours For Whole Dataset" , (len(image_id_list) * 1.0)*(end - start)/60.0/60.0/10.0
 
 		print "Images Processed", idx
+
 		
 
 	print "Saving fc7 features"
