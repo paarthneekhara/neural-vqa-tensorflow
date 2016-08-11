@@ -6,7 +6,7 @@ import numpy as np
 
 def main():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--num_lstm_layers', type=int, default=2,
+	parser.add_argument('--num_lstm_layers', type=int, default=1,
                        help='num_lstm_layers')
 	parser.add_argument('--fc7_feature_length', type=int, default=4096,
                        help='fc7_feature_length')
@@ -26,19 +26,23 @@ def main():
                        help='Batch Size')
 	parser.add_argument('--epochs', type=int, default=200,
                        help='Expochs')
+	parser.add_argument('--debug', type=bool, default=False,
+                       help='Debug')
 
 	args = parser.parse_args()
 	print "Reading QA DATA"
 	qa_data = data_loader.load_questions_answers(args)
 	
 	print "Reading fc7 features"
-	fc7_features, image_id_list = data_loader.load_fc7_features(args.data_dir, 'val')
+	fc7_features, image_id_list = data_loader.load_fc7_features(args.data_dir, 'train')
 	print "FC7 features", fc7_features.shape
 	print "image_id_list", image_id_list.shape
 
 	image_id_map = {}
 	for i in xrange(len(image_id_list)):
 		image_id_map[ image_id_list[i] ] = i
+
+	ans_map = { qa_data['answer_vocab'][ans] : ans for ans in qa_data['answer_vocab']}
 
 	model_options = {
 		'num_lstm_layers' : args.num_lstm_layers,
@@ -52,26 +56,43 @@ def main():
 		'ans_vocab_size' : len(qa_data['answer_vocab'])
 	}
 	
-	sess = tf.Session()
+	
 	
 	model = vis_lstm_model.Vis_lstm_model(model_options)
-	input_tensors, t_loss, t_answer_probab = model.build_model()
+	input_tensors, t_loss, t_answer_probab, t_logits, t_accuracy, t_cp, t_p = model.build_model()
 	train_op = tf.train.AdamOptimizer(args.learning_rate).minimize(t_loss)
-	sess.run( tf.initialize_all_variables() )
+	sess = tf.InteractiveSession()
+	tf.initialize_all_variables().run()
 
+	
+	saver = tf.train.Saver()
 	for i in xrange(args.epochs):
 		batch_no = 0
-		while (batch_no*args.batch_size) < len(qa_data['validation']):
-			sentence, answer, fc7 = get_training_batch(batch_no, args.batch_size, 
-				fc7_features, image_id_map, qa_data, 'val')
 
-			_, loss_value = sess.run([train_op, t_loss], feed_dict={
+		while (batch_no*args.batch_size) < len(qa_data['training']):
+			sentence, answer, fc7 = get_training_batch(batch_no, args.batch_size, 
+				fc7_features, image_id_map, qa_data, 'train')
+			_, loss_value, ans_prob,logits, accuracy, cp, pred = sess.run([train_op, t_loss, t_answer_probab, t_logits, t_accuracy, t_cp, t_p], feed_dict={
                 input_tensors['fc7']:fc7,
                 input_tensors['sentence']:sentence,
                 input_tensors['answer']:answer
                 })
 			batch_no += 1
+			# print "prob"
+			# print logits
+			
+			for idx, p in enumerate(pred):
+				print ans_map[p], ans_map[ np.argmax(answer[idx])]
 			print "Loss", loss_value, batch_no, i
+			print "Accuracy", accuracy
+			print "---------------"
+			
+		save_path = saver.save(sess, "Data/Models/model{}.ckpt".format(i))
+		
+
+			
+			# summary_writer = tf.train.SummaryWriter('Data/tensor_board', sess.graph.as_graph_def())
+		
 
 
 
@@ -90,13 +111,13 @@ def get_training_batch(batch_no, batch_size, fc7_features, image_id_map, qa_data
 	fc7 = np.ndarray( (n,4096) )
 
 	count = 0
+
 	for i in range(si, ei):
 		sentence[count,:] = qa[i]['question'][:]
 		answer[count, qa[i]['answer']] = 1.0
 		fc7_index = image_id_map[ qa[i]['image_id'] ]
 		fc7[count,:] = fc7_features[fc7_index][:]
 		count += 1
-	# print "Sentence"
 	# print sentence
 	return sentence, answer, fc7
 

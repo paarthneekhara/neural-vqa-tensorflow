@@ -18,10 +18,18 @@ def load_questions_answers(opts):
 	v_q_json_file = join(opts.data_dir, 'MultipleChoice_mscoco_val2014_questions.json')
 	v_a_json_file = join(opts.data_dir, 'mscoco_val2014_annotations.json')
 	qa_data_file = join(opts.data_dir, 'qa_data_file.pkl')
-	
+	vocab_file = join(opts.data_dir, 'vocab_file.pkl')
+
 	if isfile(qa_data_file):
 		with open(qa_data_file) as f:
 			data = pickle.load(f)
+			with open(vocab_file, 'wb') as f:
+				vocab_data = {
+					'answer_vocab' : data['answer_vocab'],
+					'question_vocab' : data['question_vocab'],
+					'max_question_length' : data['max_question_length']
+				}
+				pickle.dump(vocab_data, f)
 			return data
 
 	print "Loading Training questions"
@@ -98,9 +106,21 @@ def load_questions_answers(opts):
 	print "Saving qa_data"
 	with open(qa_data_file, 'wb') as f:
 		pickle.dump(data, f)
+
+	with open(vocab_file, 'wb') as f:
+		vocab_data = {
+			'answer_vocab' : data['answer_vocab'],
+			'question_vocab' : data['question_vocab'],
+			'max_question_length' : data['max_question_length']
+		}
+		pickle.dump(vocab_data, f)
+
 	return data
 
-
+def get_question_answer_vocab(data_dir):
+	vocab_file = join(data_dir, 'vocab_file.pkl')
+	vocab_data = pickle.load(open(vocab_file))
+	return vocab_data
 
 def make_answer_vocab(answers):
 	top_n = 1000

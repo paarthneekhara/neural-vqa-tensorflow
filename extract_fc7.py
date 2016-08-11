@@ -37,8 +37,8 @@ def main():
 
 	graph = tf.get_default_graph()
 
-	# for opn in graph.get_operations():
-	# 	print "Name", opn.name, opn.values()
+	for opn in graph.get_operations():
+		print "Name", opn.name, opn.values()
 
 	all_data = data_loader.load_questions_answers(args)
 	if args.split == "train":
@@ -73,7 +73,7 @@ def main():
 		
 		
 		feed_dict  = { images : image_batch[0:count,:,:,:] }
-		fc7_tensor = graph.get_tensor_by_name("import/fc7/Reshape:0")
+		fc7_tensor = graph.get_tensor_by_name("import/Relu_1:0")
 		fc7_batch = sess.run(fc7_tensor, feed_dict = feed_dict)
 		fc7[(idx - count):idx, :] = fc7_batch[0:count,:]
 		end = time.clock()
