@@ -15,7 +15,9 @@ class Vis_lstm_model:
 			self.Wemb = tf.Variable(tf.random_uniform([options['q_vocab_size'], options['embedding_size']], -1.0, 1.0), name = 'Wemb')
 			self.Wimg = self.init_weight(options['fc7_feature_length'], options['embedding_size'], name = 'Wimg')
 			self.bimg = self.init_bias(options['embedding_size'], name = 'bimg')
-
+			
+			# TODO: Havent tested for multiple layers
+			# TODO: Assumed embedding size and rnn size to be same
 			self.lstm_W = []
 			self.lstm_U = []
 			self.lstm_b = []
@@ -97,4 +99,34 @@ class Vis_lstm_model:
 			'sentence' : sentence,
 			'answer' : answer
 		}
-		return input_tensors, loss, answer_probab, word_embeddings[0], accuracy, correct_predictions, predictions
+		return input_tensors, loss, accuracy, predictions
+
+	def build_generator(self):
+		fc7_features = tf.placeholder('float32',[ None, self.options['fc7_feature_length'] ], name = 'fc7')
+		sentence = tf.placeholder('int32',[None, self.options['lstm_steps'] - 1], name = "sentence")
+
+		word_embeddings = []
+		for i in range(self.options['lstm_steps']-1):
+			word_emb = tf.nn.embedding_lookup(self.Wemb, sentence[:,i])
+			word_embeddings.append(word_emb)
+
+		image_embedding = tf.matmul(fc7_features, self.Wimg) + self.bimg
+		image_embedding = tf.nn.tanh(image_embedding)
+
+		word_embeddings.append(image_embedding)
+		lstm_output = self.forward_pass_lstm(word_embeddings)
+		lstm_answer = lstm_output[-1]
+		logits = tf.matmul(lstm_answer, self.ans_sm_W) + self.ans_sm_b
+		
+		answer_probab = tf.nn.softmax(logits, 'answer_probab')
+		
+		predictions = tf.argmax(answer_probab,1)
+
+		input_tensors = {
+			'fc7' : fc7_features,
+			'sentence' : sentence
+		}
+
+		return input_tensors, predictions, answer_probab
+
+

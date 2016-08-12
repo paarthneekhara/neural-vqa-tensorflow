@@ -9,5 +9,7 @@ Data/*
 sample.py
 vggtest.py
 *.pem
-amazon_ssh.txt
+amazon_ssh.sh
 awstransfer.sh
+localtrain.py
+vislstm.png
