@@ -24,7 +24,7 @@ def extract_fc7_features(image_path, model_path):
 
 	graph_def = tf.GraphDef()
 	graph_def.ParseFromString(vgg16raw)
-	images = tf.placeholder("float", [None, 224, 224, 3])
+	images = tf.placeholder("float32", [None, 224, 224, 3])
 	tf.import_graph_def(graph_def, input_map={ "images": images })
 	graph = tf.get_default_graph()
 

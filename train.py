@@ -28,6 +28,8 @@ def main():
                        help='Expochs')
 	parser.add_argument('--debug', type=bool, default=False,
                        help='Debug')
+	parser.add_argument('--resume_model', type=str, default=None,
+                       help='Trained Model Path')
 
 	args = parser.parse_args()
 	print "Reading QA DATA"
@@ -66,6 +68,9 @@ def main():
 
 	
 	saver = tf.train.Saver()
+	if args.resume_model:
+		saver.restore(sess, args.resume_model)
+
 	for i in xrange(args.epochs):
 		batch_no = 0
 
@@ -92,12 +97,6 @@ def main():
 		save_path = saver.save(sess, "Data/Models/model{}.ckpt".format(i))
 		
 
-			
-			# summary_writer = tf.train.SummaryWriter('Data/tensor_board', sess.graph.as_graph_def())
-		
-
-
-
 def get_training_batch(batch_no, batch_size, fc7_features, image_id_map, qa_data, split):
 	qa = None
 	if split == 'train':
@@ -113,14 +112,13 @@ def get_training_batch(batch_no, batch_size, fc7_features, image_id_map, qa_data
 	fc7 = np.ndarray( (n,4096) )
 
 	count = 0
-
 	for i in range(si, ei):
 		sentence[count,:] = qa[i]['question'][:]
 		answer[count, qa[i]['answer']] = 1.0
 		fc7_index = image_id_map[ qa[i]['image_id'] ]
 		fc7[count,:] = fc7_features[fc7_index][:]
 		count += 1
-	# print sentence
+	
 	return sentence, answer, fc7
 
 if __name__ == '__main__':

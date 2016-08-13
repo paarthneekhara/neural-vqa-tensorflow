@@ -40,7 +40,7 @@ python extract_fc7.py --split=val
   * Models are saved during training after each of the complete training data in ```Data/Models```. Supply the path of the trained model in ```model_path``` option.
   
 - <b>Evaluation</b>
-  * run ``python evaluate.py``` with the same options as that in train.py, if not the defaults.
+  * run `python evaluate.py` with the same options as that in train.py, if not the defaults.
 
 ## Implementation Details
 - fc7 relu layer features from the pretrained VGG-16 model are used for image embeddings. I did not scale these features, and am not sure if that can make a difference.

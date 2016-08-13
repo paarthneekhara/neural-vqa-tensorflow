@@ -11,7 +11,7 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--image_path', type=str, default = 'Data/cat.jpeg',
                        help='Image Path')
-	parser.add_argument('--model_path', type=str, default = 'Data/Models/model21.ckpt',
+	parser.add_argument('--model_path', type=str, default = 'Data/Models/model2.ckpt',
                        help='Model Path')
 	parser.add_argument('--num_lstm_layers', type=int, default=2,
                        help='num_lstm_layers')
@@ -71,7 +71,7 @@ def main():
 	input_tensors, t_prediction, t_ans_probab = model.build_generator()
 	sess = tf.InteractiveSession()
 	saver = tf.train.Saver()
-	saver.restore(sess, "Data/Models/model33.ckpt")
+	saver.restore(sess, args.model_path)
 	
 	pred, answer_probab = sess.run([t_prediction, t_ans_probab], feed_dict={
         input_tensors['fc7']:fc7_features,

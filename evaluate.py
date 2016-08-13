@@ -26,7 +26,7 @@ def main():
                        help='Batch Size')
 	parser.add_argument('--epochs', type=int, default=200,
                        help='Expochs')
-	parser.add_argument('--debug', type=bool, default=True,
+	parser.add_argument('--debug', type=bool, default=False,
                        help='Debug')
 	parser.add_argument('--model_path', type=str, default = 'Data/Models/model21.ckpt',
                        help='Model Path')
@@ -35,7 +35,7 @@ def main():
 	print "Reading QA DATA"
 	qa_data = data_loader.load_questions_answers(args)
 	
-	print "Reading fc7 features"te
+	print "Reading fc7 features"
 	fc7_features, image_id_list = data_loader.load_fc7_features(args.data_dir, 'val')
 	print "FC7 features", fc7_features.shape
 	print "image_id_list", image_id_list.shape
@@ -61,7 +61,7 @@ def main():
 	
 	
 	model = vis_lstm_model.Vis_lstm_model(model_options)
-	input_tensors, t_loss, t_accuracy, t_p = model.build_model()
+	input_tensors, t_prediction, t_ans_probab = model.build_generator()
 	sess = tf.InteractiveSession()
 	saver = tf.train.Saver()
 
@@ -74,24 +74,21 @@ def main():
 		sentence, answer, fc7 = get_batch(batch_no, args.batch_size, 
 			fc7_features, image_id_map, qa_data, 'val')
 		
-		loss_value, accuracy, pred = sess.run([t_loss, t_accuracy, t_p], feed_dict={
+		pred, ans_prob = sess.run([t_prediction, t_ans_probab], feed_dict={
             input_tensors['fc7']:fc7,
             input_tensors['sentence']:sentence,
-            input_tensors['answer']:answer
-            })
-		batch_no += 1
+        })
 		
+		batch_no += 1
 		if args.debug:
 			for idx, p in enumerate(pred):
 				print ans_map[p], ans_map[ np.argmax(answer[idx])]
 
-			print "Loss", loss_value, batch_no, i
-			print "Accuracy", accuracy
-			avg_accuracy += accuracy
-			print "---------------"
-		else:
-			print "Loss", loss_value, batch_no, i
-			print "Training Accuracy", accuracy
+		correct_predictions = np.equal(pred, np.argmax(answer, 1))
+		correct_predictions = correct_predictions.astype('float32')
+		accuracy = correct_predictions.mean()
+		print "Acc", accuracy
+		avg_accuracy += accuracy
 		total += 1
 	
 	print "Acc", avg_accuracy/total
