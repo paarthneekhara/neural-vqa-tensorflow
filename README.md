@@ -48,6 +48,9 @@ python extract_fc7.py --split=val
 - Answers are mapped to 1000 word vocabulary, covering 87% answers across training and validation datasets.
 - The LSTM+VIS model is defined in vis_lstm.py. The input tensors for training are fc7 features, Questions(Word indices upto 22 words), Answers(one hot encoding vector of size 1000). The model depicted in the figure is implemented with 2 LSTM layers by default(num_layers in configurable).
 
+## Results
+The model achieved an accuray of 50.8% on the validation dataset after 12 epochs of training across the entire training dataset.
+
 ## Sample Predictions
 
 The fun part! Try it for yourself. Make sure you have tensorflow installed. Download the data files/trained model from [this link][9] and save them in the ```Data/``` directory. Test for an image using:
@@ -64,6 +67,7 @@ python predict.py --image_path="Data/sample.jpg" --question="Which animal is thi
 | ![](http://i.imgur.com/ifcccpd.jpg)      | What are they playing with? | frisbee, soccer ball, soccer|
 | ![](http://i.imgur.com/VrjUbgH.jpg)      | What is in the standing person's hand? | bat, glove, ball|
 | ![](http://i.imgur.com/80foxDZ.jpg)      | What are they doing? | surfing, swimming, parasailing|
+| ![](http://i.imgur.com/7ZZi2Xp.jpg)      | What sport is this? | skateboarding, parasailing, surfing|
 
 ## References
 - [Exploring Models and Data for Image Question Answering][1]
@@ -78,4 +82,4 @@ python predict.py --image_path="Data/sample.jpg" --question="Which animal is thi
 [6]: http://visualqa.org/
 [7]: https://github.com/ry/tensorflow-vgg16
 [8]: https://github.com/jazzsaxmafia/show_attend_and_tell.tensorflow
-[9]: https://github.com/ry/tensorflow-vgg16
+[9]: https://drive.google.com/folderview?id=0B30fmeZ1slbBU1JSRHdiWkF4NUk&usp=sharing
