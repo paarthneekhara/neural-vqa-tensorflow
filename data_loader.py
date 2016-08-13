@@ -5,7 +5,6 @@ import re
 import numpy as np
 import pprint
 import pickle
-import h5py
 
 def load_questions_answers(opts):
 	
@@ -178,6 +177,7 @@ def make_questions_vocab(questions, answers, answer_vocab):
 
 
 def load_fc7_features(data_dir, split):
+	import h5py
 	fc7_features = None
 	image_id_list = None
 	with h5py.File( join( data_dir, (split + '_fc7.h5')),'r') as hf:
