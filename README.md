@@ -63,6 +63,7 @@ python predict.py --image_path="Data/sample.jpg" --question="Which animal is thi
 | ![](http://i.imgur.com/yk53y1Y.jpg)      | What color is the frisbee that is upside down? | red, white, blue|
 | ![](http://i.imgur.com/ifcccpd.jpg)      | What are they playing with? | frisbee, soccer ball, soccer|
 | ![](http://i.imgur.com/VrjUbgH.jpg)      | What is in the standing person's hand? | bat, glove, ball|
+| ![](http://i.imgur.com/80foxDZ.jpg)      | What are they doing? | surfing, swimming, parasailing|
 
 ## References
 - [Exploring Models and Data for Image Question Answering][1]
