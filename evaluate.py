@@ -66,33 +66,32 @@ def main():
 	avg_accuracy = 0.0
 	total = 0
 	saver.restore(sess, "Data/Models/model32.ckpt")
-	for i in xrange(1):
-		batch_no = 0
+	
+	batch_no = 0
+	while (batch_no*args.batch_size) < len(qa_data['validation']):
+		sentence, answer, fc7 = get_training_batch(batch_no, args.batch_size, 
+			fc7_features, image_id_map, qa_data, 'val')
+		
+		loss_value, accuracy, pred = sess.run([t_loss, t_accuracy, t_p], feed_dict={
+            input_tensors['fc7']:fc7,
+            input_tensors['sentence']:sentence,
+            input_tensors['answer']:answer
+            })
+		batch_no += 1
+		# print "prob"
+		# print logits
+		if args.debug:
+			for idx, p in enumerate(pred):
+				print ans_map[p], ans_map[ np.argmax(answer[idx])]
 
-		while (batch_no*args.batch_size) < len(qa_data['validation']):
-			sentence, answer, fc7 = get_training_batch(batch_no, args.batch_size, 
-				fc7_features, image_id_map, qa_data, 'val')
-			
-			loss_value, accuracy, pred = sess.run([t_loss, t_accuracy, t_p], feed_dict={
-	            input_tensors['fc7']:fc7,
-	            input_tensors['sentence']:sentence,
-	            input_tensors['answer']:answer
-                })
-			batch_no += 1
-			# print "prob"
-			# print logits
-			if args.debug:
-				for idx, p in enumerate(pred):
-					print ans_map[p], ans_map[ np.argmax(answer[idx])]
-
-				print "Loss", loss_value, batch_no, i
-				print "Accuracy", accuracy
-				avg_accuracy += accuracy
-				print "---------------"
-			else:
-				print "Loss", loss_value, batch_no, i
-				print "Training Accuracy", accuracy
-			total += 1
+			print "Loss", loss_value, batch_no, i
+			print "Accuracy", accuracy
+			avg_accuracy += accuracy
+			print "---------------"
+		else:
+			print "Loss", loss_value, batch_no, i
+			print "Training Accuracy", accuracy
+		total += 1
 	
 	print "Acc", avg_accuracy/total
 

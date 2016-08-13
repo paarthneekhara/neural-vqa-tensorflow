@@ -23,13 +23,6 @@ def load_questions_answers(opts):
 	if isfile(qa_data_file):
 		with open(qa_data_file) as f:
 			data = pickle.load(f)
-			with open(vocab_file, 'wb') as f:
-				vocab_data = {
-					'answer_vocab' : data['answer_vocab'],
-					'question_vocab' : data['question_vocab'],
-					'max_question_length' : data['max_question_length']
-				}
-				pickle.dump(vocab_data, f)
 			return data
 
 	print "Loading Training questions"
@@ -176,11 +169,12 @@ def make_questions_vocab(questions, answers, answer_vocab):
 		qw = qw_freq[1]
 		# print frequency, qw
 		if frequency > qw_freq_threhold:
-			qw_vocab[qw] = i
+			# +1 for accounting the zero padding for batc training
+			qw_vocab[qw] = i + 1
 		else:
 			break
 
-	qw_vocab['UNK'] = len(qw_vocab)
+	qw_vocab['UNK'] = len(qw_vocab) + 1
 
 	return qw_vocab, max_question_length
 

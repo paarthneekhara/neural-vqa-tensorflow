@@ -12,12 +12,13 @@ class Vis_lstm_model:
 		with tf.device('/cpu:0'):
 			self.options = options
 
-			self.Wemb = tf.Variable(tf.random_uniform([options['q_vocab_size'], options['embedding_size']], -1.0, 1.0), name = 'Wemb')
+			# +1 for zero padding
+			self.Wemb = tf.Variable(tf.random_uniform([options['q_vocab_size'] + 1, options['embedding_size']], -1.0, 1.0), name = 'Wemb')
 			self.Wimg = self.init_weight(options['fc7_feature_length'], options['embedding_size'], name = 'Wimg')
 			self.bimg = self.init_bias(options['embedding_size'], name = 'bimg')
 			
 			# TODO: Havent tested for multiple layers
-			# TODO: Assumed embedding size and rnn size to be same
+			# TODO: Assumed embedding size and rnn-size to be same
 			self.lstm_W = []
 			self.lstm_U = []
 			self.lstm_b = []
