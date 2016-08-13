@@ -20,6 +20,7 @@ def load_questions_answers(opts):
 	qa_data_file = join(opts.data_dir, 'qa_data_file.pkl')
 	vocab_file = join(opts.data_dir, 'vocab_file.pkl')
 
+	# IF ALREADY EXTRACTED
 	if isfile(qa_data_file):
 		with open(qa_data_file) as f:
 			data = pickle.load(f)
@@ -67,10 +68,7 @@ def load_questions_answers(opts):
 			for i in range(0, len(question_words)):
 				training_data[-1]['question'][base + i] = question_vocab[ question_words[i] ]
 
-	# pprint.pprint(training_data)
 	print "Training Data", len(training_data)
-
-	
 	val_data = []
 	for i,question in enumerate( v_questions['questions']):
 		ans = v_answers['annotations'][i]['multiple_choice_answer']
@@ -187,23 +185,3 @@ def load_fc7_features(data_dir, split):
 	with h5py.File( join( data_dir, (split + '_image_id_list.h5')),'r') as hf:
 		image_id_list = np.array(hf.get('image_id_list'))
 	return fc7_features, image_id_list
-
-
-
-def main():
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--split', type=str, default='val',
-                       help='train/val')
-	parser.add_argument('--model_path', type=str, default='Data/vgg16.tfmodel',
-                       help='Pretrained VGG16 Model')
-	parser.add_argument('--data_dir', type=str, default='Data',
-                       help='Data directory')
-
-	args = parser.parse_args()
-	load_questions_answers(args)
-	
-
-if __name__ == '__main__':
-	
-	main()
-

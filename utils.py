@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import misc
 import tensorflow as tf
+
 # VGG 16 accepts RGB channel 0 to 1 (This tensorflow model).
 def load_image_array(image_file):
 	img = misc.imread(image_file)

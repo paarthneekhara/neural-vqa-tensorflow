@@ -6,7 +6,7 @@ import numpy as np
 
 def main():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--num_lstm_layers', type=int, default=1,
+	parser.add_argument('--num_lstm_layers', type=int, default=2,
                        help='num_lstm_layers')
 	parser.add_argument('--fc7_feature_length', type=int, default=4096,
                        help='fc7_feature_length')
@@ -28,12 +28,14 @@ def main():
                        help='Expochs')
 	parser.add_argument('--debug', type=bool, default=True,
                        help='Debug')
+	parser.add_argument('--model_path', type=str, default = 'Data/Models/model21.ckpt',
+                       help='Model Path')
 
 	args = parser.parse_args()
 	print "Reading QA DATA"
 	qa_data = data_loader.load_questions_answers(args)
 	
-	print "Reading fc7 features"
+	print "Reading fc7 features"te
 	fc7_features, image_id_list = data_loader.load_fc7_features(args.data_dir, 'val')
 	print "FC7 features", fc7_features.shape
 	print "image_id_list", image_id_list.shape
@@ -65,11 +67,11 @@ def main():
 
 	avg_accuracy = 0.0
 	total = 0
-	saver.restore(sess, "Data/Models/model32.ckpt")
+	saver.restore(sess, args.model_path)
 	
 	batch_no = 0
 	while (batch_no*args.batch_size) < len(qa_data['validation']):
-		sentence, answer, fc7 = get_training_batch(batch_no, args.batch_size, 
+		sentence, answer, fc7 = get_batch(batch_no, args.batch_size, 
 			fc7_features, image_id_map, qa_data, 'val')
 		
 		loss_value, accuracy, pred = sess.run([t_loss, t_accuracy, t_p], feed_dict={
@@ -78,8 +80,7 @@ def main():
             input_tensors['answer']:answer
             })
 		batch_no += 1
-		# print "prob"
-		# print logits
+		
 		if args.debug:
 			for idx, p in enumerate(pred):
 				print ans_map[p], ans_map[ np.argmax(answer[idx])]
@@ -95,16 +96,8 @@ def main():
 	
 	print "Acc", avg_accuracy/total
 
-		# save_path = saver.save(sess, "Data/Models/model{}.ckpt".format(i))
-		
 
-			
-			# summary_writer = tf.train.SummaryWriter('Data/tensor_board', sess.graph.as_graph_def())
-		
-
-
-
-def get_training_batch(batch_no, batch_size, fc7_features, image_id_map, qa_data, split):
+def get_batch(batch_no, batch_size, fc7_features, image_id_map, qa_data, split):
 	qa = None
 	if split == 'train':
 		qa = qa_data['training']
@@ -126,7 +119,7 @@ def get_training_batch(batch_no, batch_size, fc7_features, image_id_map, qa_data
 		fc7_index = image_id_map[ qa[i]['image_id'] ]
 		fc7[count,:] = fc7_features[fc7_index][:]
 		count += 1
-	# print sentence
+	
 	return sentence, answer, fc7
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ def main():
                        help='Image Path')
 	parser.add_argument('--model_path', type=str, default = 'Data/Models/model21.ckpt',
                        help='Model Path')
-	parser.add_argument('--num_lstm_layers', type=int, default=1,
+	parser.add_argument('--num_lstm_layers', type=int, default=2,
                        help='num_lstm_layers')
 	parser.add_argument('--fc7_feature_length', type=int, default=4096,
                        help='fc7_feature_length')
