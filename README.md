@@ -53,7 +53,7 @@ The model achieved an accuray of 50.8% on the validation dataset after 12 epochs
 
 ## Sample Predictions
 
-The fun part! Try it for yourself. Make sure you have tensorflow installed. Download the data files/trained model from [this link][9] and save them in the ```Data/``` directory. Test for an image using:
+The fun part! Try it for yourself. Make sure you have tensorflow installed. Download the data files/trained model from [this link][9] and save them in the ```Data/``` directory. Also download the [pretrained VGG-16 model][7] and save it as ```Data/vgg16.tfmodel```. You can test for any sample image using:
 ```
 python predict.py --image_path="Data/sample.jpg" --question="Which animal is this?" --model_path="Data/model7.ckpt"
 ```
