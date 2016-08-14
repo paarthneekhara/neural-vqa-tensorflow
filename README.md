@@ -36,7 +36,7 @@ python extract_fc7.py --split=val
     - `data_dir`: Directory containing the data h5 files. Default is `Data/`.
 
 - <b>Prediction</b>
-  * ```python predict.py --image_path="sample_image.jpg" --question="What is the color of the animal shown?" --model_path = "Data/Models/model25.ckpt"```
+  * ```python predict.py --image_path="sample_image.jpg" --question="What is the color of the animal shown?" --model_path = "Data/Models/model2.ckpt"```
   * Models are saved during training after each of the complete training data in ```Data/Models```. Supply the path of the trained model in ```model_path``` option.
   
 - <b>Evaluation</b>
@@ -55,7 +55,7 @@ The model achieved an accuray of 50.8% on the validation dataset after 12 epochs
 
 The fun part! Try it for yourself. Make sure you have tensorflow installed. Download the data files/trained model from [this link][9] and save them in the ```Data/``` directory. Also download the [pretrained VGG-16 model][7] and save it as ```Data/vgg16.tfmodel```. You can test for any sample image using:
 ```
-python predict.py --image_path="Data/sample.jpg" --question="Which animal is this?" --model_path="Data/model7.ckpt"
+python predict.py --image_path="Data/sample.jpg" --question="Which animal is this?" --model_path="Data/model2.ckpt"
 ```
 | Image        | Question           | Top Answers (left to right)  |
 | ------------- |:-------------:| -----:|
