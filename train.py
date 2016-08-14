@@ -75,13 +75,14 @@ def main():
 		batch_no = 0
 
 		while (batch_no*args.batch_size) < len(qa_data['training']):
-			sentence, answer, fc7 = get_training_batch(batch_no, args.batch_size, 
-				fc7_features, image_id_map, qa_data, 'train')
-			_, loss_value, accuracy, pred = sess.run([train_op, t_loss, t_accuracy, t_p], feed_dict={
-                input_tensors['fc7']:fc7,
-                input_tensors['sentence']:sentence,
-                input_tensors['answer']:answer
-                })
+			sentence, answer, fc7 = get_training_batch(batch_no, args.batch_size, fc7_features, image_id_map, qa_data, 'train')
+			_, loss_value, accuracy, pred = sess.run([train_op, t_loss, t_accuracy, t_p], 
+				feed_dict={
+					input_tensors['fc7']:fc7,
+					input_tensors['sentence']:sentence,
+					input_tensors['answer']:answer
+				}
+			)
 			batch_no += 1
 			if args.debug:
 				for idx, p in enumerate(pred):
