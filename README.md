@@ -1,5 +1,7 @@
 # Visual Question Answering in Tensorflow
 
+[![Join the chat at https://gitter.im/neural-vqa-tensorflow/Lobby](https://badges.gitter.im/neural-vqa-tensorflow/Lobby.svg)](https://gitter.im/neural-vqa-tensorflow/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is a Tensorflow implementation of the VIS + LSTM visual question answering model from the paper [Exploring Models and Data for Image Question Answering][1]
 by Mengye Ren, Ryan Kiros & Richard Zemel. The model architectures vaires slightly from the original - the image embedding is plugged into the last lstm step (after the question) instead of the first. The LSTM model uses the same hyperparameters as those in the [Torch implementation of neural-VQA][2]. 
 ![Model architecture](http://i.imgur.com/Jvixx2W.jpg)
