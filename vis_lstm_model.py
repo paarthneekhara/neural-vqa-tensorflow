@@ -54,6 +54,9 @@ class Vis_lstm_model:
 					c[lstm_step] = i * new_c
 				else:
 					c[lstm_step] = f * c[lstm_step-1] + i * new_c
+
+				# BUG IN THE LSTM --> Haven't corrected this yet, Will have to retrain the model.
+				# h[lstm_step] = o * tf.nn.tanh(c[lstm_step])
 				h[lstm_step] = o * tf.nn.tanh(new_c)
 				layer_output.append(h[lstm_step])
 
