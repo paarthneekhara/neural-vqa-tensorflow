@@ -44,7 +44,7 @@ class Vis_lstm_model:
 					lstm_preactive = tf.matmul(x[lstm_step], self.lstm_W[l]) + self.lstm_b[l]
 				else:
 					lstm_preactive = tf.matmul(h[lstm_step-1], self.lstm_U[l]) + tf.matmul(x[lstm_step], self.lstm_W[l]) + self.lstm_b[l]
-				i, f, o, new_c = tf.split(1, 4, lstm_preactive)
+				i, f, o, new_c = tf.split(lstm_preactive, num_or_size_splits = 4, axis = 1)
 				i = tf.nn.sigmoid(i)
 				f = tf.nn.sigmoid(f)
 				o = tf.nn.sigmoid(o)
@@ -56,8 +56,8 @@ class Vis_lstm_model:
 					c[lstm_step] = f * c[lstm_step-1] + i * new_c
 
 				# BUG IN THE LSTM --> Haven't corrected this yet, Will have to retrain the model.
-				# h[lstm_step] = o * tf.nn.tanh(c[lstm_step])
-				h[lstm_step] = o * tf.nn.tanh(new_c)
+				h[lstm_step] = o * tf.nn.tanh(c[lstm_step])
+				# h[lstm_step] = o * tf.nn.tanh(new_c)
 				layer_output.append(h[lstm_step])
 
 			x = layer_output
@@ -89,7 +89,8 @@ class Vis_lstm_model:
 		lstm_output = self.forward_pass_lstm(word_embeddings)
 		lstm_answer = lstm_output[-1]
 		logits = tf.matmul(lstm_answer, self.ans_sm_W) + self.ans_sm_b
-		ce = tf.nn.softmax_cross_entropy_with_logits(logits, answer, name = 'ce')
+		# ce = tf.nn.softmax_cross_entropy_with_logits(logits, answer, name = 'ce')
+		ce = tf.nn.softmax_cross_entropy_with_logits(labels=answer, logits= logits, name = 'ce')
 		answer_probab = tf.nn.softmax(logits, name='answer_probab')
 		
 		predictions = tf.argmax(answer_probab,1)

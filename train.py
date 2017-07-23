@@ -30,10 +30,12 @@ def main():
                        help='Debug')
 	parser.add_argument('--resume_model', type=str, default=None,
                        help='Trained Model Path')
+	parser.add_argument('--version', type=int, default=2,
+                       help='VQA data version')
 
 	args = parser.parse_args()
 	print "Reading QA DATA"
-	qa_data = data_loader.load_questions_answers(args)
+	qa_data = data_loader.load_questions_answers(args.version, args.data_dir)
 	
 	print "Reading fc7 features"
 	fc7_features, image_id_list = data_loader.load_fc7_features(args.data_dir, 'train')

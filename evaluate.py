@@ -30,11 +30,14 @@ def main():
                        help='Debug')
 	parser.add_argument('--model_path', type=str, default = 'Data/Models/model21.ckpt',
                        help='Model Path')
+	parser.add_argument('--version', type=int, default=2,
+                       help='VQA data version')
 
 	args = parser.parse_args()
 	print "Reading QA DATA"
-	qa_data = data_loader.load_questions_answers(args)
-	
+	# qa_data = data_loader.load_questions_answers(args)
+	qa_data = data_loader.load_questions_answers(args.version, args.data_dir)
+
 	print "Reading fc7 features"
 	fc7_features, image_id_list = data_loader.load_fc7_features(args.data_dir, 'val')
 	print "FC7 features", fc7_features.shape
