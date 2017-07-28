@@ -98,7 +98,6 @@ def main():
 				print "Training Accuracy", accuracy
 			
 		save_path = saver.save(sess, "Data/Models/model{}.ckpt".format(i))
-		
 
 def get_training_batch(batch_no, batch_size, fc7_features, image_id_map, qa_data, split):
 	qa = None

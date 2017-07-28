@@ -7,22 +7,22 @@ import pprint
 import pickle
 
 def prepare_training_data(version = 2, data_dir = 'Data'):
-    if version == 1:
-        t_q_json_file = join(data_dir, 'MultipleChoice_mscoco_train2014_questions.json')
-        t_a_json_file = join(data_dir, 'mscoco_train2014_annotations.json')
+	if version == 1:
+		t_q_json_file = join(data_dir, 'MultipleChoice_mscoco_train2014_questions.json')
+		t_a_json_file = join(data_dir, 'mscoco_train2014_annotations.json')
 
-        v_q_json_file = join(data_dir, 'MultipleChoice_mscoco_val2014_questions.json')
-        v_a_json_file = join(data_dir, 'mscoco_val2014_annotations.json')
-        qa_data_file = join(data_dir, 'qa_data_file1.pkl')
-        vocab_file = join(data_dir, 'vocab_file1.pkl')
-    else:
-        t_q_json_file = join(data_dir, 'v2_OpenEnded_mscoco_train2014_questions.json')
-        t_a_json_file = join(data_dir, 'v2_mscoco_train2014_annotations.json')
+		v_q_json_file = join(data_dir, 'MultipleChoice_mscoco_val2014_questions.json')
+		v_a_json_file = join(data_dir, 'mscoco_val2014_annotations.json')
+		qa_data_file = join(data_dir, 'qa_data_file1.pkl')
+		vocab_file = join(data_dir, 'vocab_file1.pkl')
+	else:
+		t_q_json_file = join(data_dir, 'v2_OpenEnded_mscoco_train2014_questions.json')
+		t_a_json_file = join(data_dir, 'v2_mscoco_train2014_annotations.json')
 
-        v_q_json_file = join(data_dir, 'v2_OpenEnded_mscoco_val2014_questions.json')
-        v_a_json_file = join(data_dir, 'v2_mscoco_val2014_annotations.json')
-        qa_data_file = join(data_dir, 'qa_data_file2.pkl')
-        vocab_file = join(data_dir, 'vocab_file2.pkl')
+		v_q_json_file = join(data_dir, 'v2_OpenEnded_mscoco_val2014_questions.json')
+		v_a_json_file = join(data_dir, 'v2_mscoco_val2014_annotations.json')
+		qa_data_file = join(data_dir, 'qa_data_file2.pkl')
+		vocab_file = join(data_dir, 'vocab_file2.pkl')
 
 	# IF ALREADY EXTRACTED
 	# qa_data_file = join(data_dir, 'qa_data_file{}.pkl'.format(version))
@@ -114,17 +114,17 @@ def prepare_training_data(version = 2, data_dir = 'Data'):
 	return data
 	
 def load_questions_answers(version = 2, data_dir = 'Data'):
-    qa_data_file = join(data_dir, 'qa_data_file{}.pkl'.format(version))
-    
-    if isfile(qa_data_file):
-        with open(qa_data_file) as f:
-            data = pickle.load(f)
-            return data
+	qa_data_file = join(data_dir, 'qa_data_file{}.pkl'.format(version))
+	
+	if isfile(qa_data_file):
+		with open(qa_data_file) as f:
+			data = pickle.load(f)
+			return data
 
 def get_question_answer_vocab(version = 2, data_dir = 'Data'):
-    vocab_file = join(data_dir, 'vocab_file{}.pkl'.format(version))
-    vocab_data = pickle.load(open(vocab_file))
-    return vocab_data
+	vocab_file = join(data_dir, 'vocab_file{}.pkl'.format(version))
+	vocab_data = pickle.load(open(vocab_file))
+	return vocab_data
 
 def make_answer_vocab(answers):
 	top_n = 1000
